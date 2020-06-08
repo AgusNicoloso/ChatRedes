@@ -15,16 +15,9 @@ const publicPath = path.resolve(__dirname, "../public");
 const port = process.env.PORT || 3000;
 //Utilizo un Middleware para habilitar la carpeta publica y que todos puedan acceder
 app.use(express.static(publicPath));
-//Inicializo socketIO - esta es la comunicacion del backend
-let io = socketIO(server);
-//Para saber cuando un usuario se conecta/desconecta al server
-io.on("connection", (client) => {
-  console.log("Usuario conectado");
-  client.on("disconnect", () => {
-    console.log("Usuario desconectado");
-  });
-});
-
+//Exporto la variable socketIO - esta es la comunicacion del backend
+module.exports.io = socketIO(server);
+require("./sockets/sockets");
 //Listener para que escuche el puerto
 server.listen(port, (err) => {
   //Si hay un error lanzo el error
