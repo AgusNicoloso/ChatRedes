@@ -14,9 +14,11 @@ io.on("connection", (client) => {
   });
 
   //Escuchar el cliente
-  client.on("sendMessage", (message, callback) => {
-    console.log(message);
-    if (message.user) {
+  client.on("sendMessage", (data, callback) => {
+    console.log(data);
+
+    client.broadcast.emit("sendMessage", data);
+    /* if (message.user) {
       callback({
         message: "Se envio el mensaje",
       });
@@ -24,7 +26,6 @@ io.on("connection", (client) => {
       callback({
         message: "No se envio el mensaje",
       });
-    }
-    callback();
+    }*/
   });
 });
