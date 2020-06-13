@@ -24,7 +24,7 @@ socket.on("disconnect", function () {
 
 //Escuchar informacion
 socket.on("createMessage", function (message) {
-  console.log("Servidor : ", message);
+  renderMessages(message);
 });
 
 //Escuchar cambios de usuarios, cuando un usuario entra o sale del chat

@@ -15,13 +15,16 @@ io.on("connection", (client) => {
 
     let usersList = users.addUser(client.id, data.name);
     client.broadcast.emit("listUsers", users.getUsers());
+    client.broadcast.emit("createMessage", createMessage(data.name, "se unió"));
+
     callback(usersList);
   });
 
-  client.on("createMessage", (data) => {
+  client.on("createMessage", (data, callback) => {
     let user = users.getUser(client.id);
-    let message = createMessage(user.name, user.message);
+    let message = createMessage(user.name, data.message);
     client.broadcast.emit("createMessage", message);
+    callback(message);
   });
 
   client.on("disconnect", () => {
@@ -29,7 +32,7 @@ io.on("connection", (client) => {
 
     client.broadcast.emit(
       "createMessage",
-      createMessage("Admin", `${userDeleted.name} salió del chat`)
+      createMessage(userDeleted.name, "salió del chat")
     );
     client.broadcast.emit("listUsers", users.getUsers());
   });
