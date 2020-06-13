@@ -1,31 +1,43 @@
 //Recibo la variable IO
 const { io } = require("../server");
+const { User } = require("../classes/user");
+const { createMessage } = require("../utils/utils");
+const users = new User();
 //Para saber cuando un usuario se conecta/desconecta al server
 io.on("connection", (client) => {
-  console.log("Usuario conectado");
+  client.on("loginChat", (data, callback) => {
+    if (!data.name) {
+      return callback({
+        error: true,
+        message: "El nombre es necesario",
+      });
+    }
 
-  client.emit("sendMessage", {
-    user: "Admin",
-    message: "Bienvenido al chat",
+    let usersList = users.addUser(client.id, data.name);
+    client.broadcast.emit("listUsers", users.getUsers());
+    callback(usersList);
+  });
+
+  client.on("createMessage", (data) => {
+    let user = users.getUser(client.id);
+    let message = createMessage(user.name, user.message);
+    client.broadcast.emit("createMessage", message);
   });
 
   client.on("disconnect", () => {
-    console.log("Usuario desconectado");
+    let userDeleted = users.deleteUser(client.id);
+
+    client.broadcast.emit(
+      "createMessage",
+      createMessage("Admin", `${userDeleted.name} salió del chat`)
+    );
+    client.broadcast.emit("listUsers", users.getUsers());
   });
 
-  //Escuchar el cliente
-  client.on("sendMessage", (data, callback) => {
-    console.log(data);
-
-    client.broadcast.emit("sendMessage", data);
-    /* if (message.user) {
-      callback({
-        message: "Se envio el mensaje",
-      });
-    } else {
-      callback({
-        message: "No se envio el mensaje",
-      });
-    }*/
+  //Mensajes privados
+  client.on("privateMessage", (data) => {
+    let user = user.getUser(client.id);
+    let message = createMessage(user.name, data.message);
+    client.broadcast.to(data.to).emit("privateMessage", message);
   });
 });
