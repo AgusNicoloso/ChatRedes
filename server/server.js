@@ -12,6 +12,7 @@ const app = express();
 let server = http.createServer(app);
 //Creo un public path para compartir y hacer publica la carpeta public
 const publicPath = path.resolve(__dirname, "../public");
+//Verifico si estoy en nube o local para asignar el puerto
 const port = process.env.PORT || 3000;
 //Utilizo un Middleware para habilitar la carpeta publica y que todos puedan acceder
 app.use(express.static(publicPath));
